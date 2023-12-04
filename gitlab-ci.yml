@@ -60,6 +60,8 @@ unit-test-discovery-service: # This job runs in the test stage.
     - cd api-gateway
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - docker push evaldas483/applicatus-api-gateway
+  runs-on:
+    - self-hosted
   only:
     - dev
     
