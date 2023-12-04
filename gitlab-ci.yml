@@ -1,0 +1,79 @@
+stages:          # List of stages for jobs, and their order of execution
+  - build
+  - test
+  - docker_push
+  - QC
+
+#build-job:       # This job runs in the build stage, which runs first.
+#  stage: build
+#  script:
+#    - echo "Compiling the code..."
+#    - echo "Compile complete."
+
+# Tests for discovery service
+# build-discovery-service: # This job runs in the build stage,which runs first.
+# stage: build
+# script:
+#   - echo "Running Build"
+#   - cd applicatus-api-gateway
+#   - mvn clean install -DskipTests -e
+#   - echo "Build complete."
+# artifacts:
+#   paths:
+#   - /home/gitlab-runner/
+
+build-api-gateway: # This job runs in the build stage,which runs first.
+  stage: build
+  script:
+    - echo "Running Build"
+    - echo $JAVA_HOME
+    - cd api-gateway
+    - chmod +x gradlew
+    - ./gradlew clean build
+    - echo "Build complete."
+  artifacts:
+    paths:
+    - /home/gitlab-runner/
+
+
+unit-test-job:   # This job runs in the test stage.
+  stage: test    # It only starts when the job in the build stage completes successfully.
+  script:
+    - echo "Running unit tests... This will take about 60 seconds."
+    - cd api-gateway
+    - mvn test
+    - echo "Code coverage test complete"
+
+#lint-test-job:   # This job also runs in the test stage.
+#  stage: test    # It can run at the same time as unit-test-job (in parallel).
+#  script:
+#    - echo "Linting code... This will take about 10 seconds."
+#    - sleep 10
+#    - echo "No lint issues found."
+
+# DOCKER PUSH
+
+unit-test-discovery-service: # This job runs in the test stage.
+  stage: docker_push # It only starts when the job in the build stage completes successfully.
+  script:
+    - echo "Running unit tests..."
+    - cd api-gateway
+    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - docker push evaldas483/applicatus-api-gateway
+  only:
+    - dev
+    
+# sonarqube-check-discovery-service:
+#   stage: QC
+#   script:
+#     - cd - cd api-gateway
+#     - mvn --batch-mode verify sonar:sonar -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.password=$SONAR_PASSWORD
+#   only:
+#     - dev
+
+#deploy-job:      # This job runs in the deploy stage.
+#  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+#  environment: production
+#  script:
+#    - echo "Deploying application..."
+#    - echo "Application successfully deployed."

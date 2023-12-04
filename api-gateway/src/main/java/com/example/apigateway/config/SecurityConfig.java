@@ -4,12 +4,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoders;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.http.HttpMethod;
 import reactor.core.publisher.Mono;
@@ -18,44 +21,78 @@ import org.springframework.security.oauth2.server.resource.authentication.Reacti
 
 @Configuration
 @EnableWebFluxSecurity
+//@RequireArgsConstructor
 public class SecurityConfig {
 
+//    private final AuthTokenFilter jwtFilter;
+//    private final AuthenticationProvider authenticationProvider;
+//
 
-//    @Bean
-//    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http){
-//        http.authorizeExchange(exchanges -> exchanges
-////                        .pathMatchers(HttpMethod.POST,"/product-service/api/product/**").hasRole("ADMIN")
-////                        .pathMatchers(HttpMethod.PUT,"/product-service/api/product/**").hasRole("ADMIN")
-////                        .pathMatchers(HttpMethod.DELETE,"/product-service/api/product/**").hasRole("ADMIN")
-//                                //.pathMatchers(HttpMethod.GET, "/api/user/**").hasRole("USER")
-//                                .pathMatchers(HttpMethod.GET, "/api/user/**").permitAll()
-//                                .pathMatchers(HttpMethod.PUT, "/user-service/api/user/**").hasRole("ADMIN")
-//                                .pathMatchers(HttpMethod.DELETE, "/user-service/api/user/**").hasRole("ADMIN")
-////                        .pathMatchers(HttpMethod.GET, "/order-service/api/order/getUserOrder").authenticated()
-////                        .pathMatchers(HttpMethod.POST, "/order-service/api/order/placeOrder").authenticated()
-////                        .pathMatchers(HttpMethod.POST, "/order-service/api/order/**").hasRole("ADMIN")
-////                        .pathMatchers(HttpMethod.PUT, "/order-service/api/order/**").hasRole("ADMIN")
-////                        .pathMatchers(HttpMethod.DELETE, "/order-service/api/order/**").hasRole("ADMIN")
-////                        .pathMatchers(HttpMethod.DELETE, "/inventory-service/api/invertory/**").hasRole("ADMIN")
-////                        .pathMatchers(HttpMethod.GET, "/product-service/api/product/getAll").permitAll()
-//                                .pathMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-//                                .pathMatchers(HttpMethod.GET, "/actuator/gateway/routes").permitAll()
-//                )    .oauth2ResourceServer(
+    @Bean
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
+        http.authorizeExchange(exchanges -> exchanges
+                                .pathMatchers(HttpMethod.POST, "/post-service/api/post/**").hasRole("USER")
+                                .pathMatchers(HttpMethod.PUT, "/post-service/api/post/**").hasRole("USER")
+                                .pathMatchers(HttpMethod.DELETE, "/post-service/api/post/**").hasRole("USER")
+                                .pathMatchers(HttpMethod.GET, "/post-service/api/post").hasRole("USER")
+                                .pathMatchers(HttpMethod.POST, "/post-service/api/post/**").hasRole("USER")
+//                        .pathMatchers(HttpMethod.POST, "/api/post/**").hasRole("USER").authenticated()
+//                                .pathMatchers(HttpMethod.PUT, "/api/post/**").permitAll()
+                                .pathMatchers(HttpMethod.GET, "/user-service/api/user/**").permitAll()
+                                .pathMatchers(HttpMethod.GET, "/user-service/api/user/{username}/info").hasAnyRole()
+                                .pathMatchers(HttpMethod.GET, "/user-service/api/user/getAll").permitAll()
+                                .pathMatchers(HttpMethod.PUT, "/user-service/api/user/**").permitAll()
+                                .pathMatchers(HttpMethod.DELETE, "/user-service/api/user/**").permitAll()
+
+
+//                        .pathMatchers(HttpMethod.GET, "/api/post/**/api/order/getUserOrder").authenticated()
+//                        .pathMatchers(HttpMethod.POST, "/api/post/**/api/order/placeOrder").authenticated()
+//                        .pathMatchers(HttpMethod.POST, "/api/post/**/api/order/**").hasRole("ADMIN")
+//                        .pathMatchers(HttpMethod.PUT, "/api/post/**/api/order/**").hasRole("ADMIN")
+//                        .pathMatchers(HttpMethod.DELETE, "/api/post/**/api/order/**").hasRole("ADMIN")
+//                        .pathMatchers(HttpMethod.DELETE, "/inventory-service/api/invertory/**").hasRole("ADMIN")
+//                        .pathMatchers(HttpMethod.GET, "/post-service/api/product/getAll").permitAll()
+                                .pathMatchers(HttpMethod.POST, "/user-service/api/auth/register").permitAll()
+                                .pathMatchers(HttpMethod.POST, "/user-service/api/auth/**").permitAll()
+
+                                .pathMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+                                .pathMatchers(HttpMethod.GET, "/actuator/gateway/routes").permitAll()
+                );
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+//                http.oauth2ResourceServer( oauth2 -> oauth2
+//                                .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter()));
+
+
+
+//                .oauth2ResourceServer(oauth2ResourceServer ->
+//                oauth2ResourceServer
+//                        .jwt
+//                                (jwt -> jwt
+//                                        .jwtAuthenticationConverter(grantedAuthoritiesExtractor())
+//                                )
+
+        http.csrf(ServerHttpSecurity.CsrfSpec::disable);
+
+        return http.build();
+    }
+        ;
+//                .oauth2ResourceServer(
+//                        oauth2ResourceServer -> oauth2ResourceServer.jwt.jwtDecoder()
+//        ).jwt().jwtAuthenticationConverter().jwtDecoder();
+//
+//                .oauth2ResourceServer(oauth2ResourceServer ->
+//                        oauth2ResourceServer
+//                                .jwt
+//                                        (jwt -> jwt
+//                                        .jwtAuthenticationConverter(grantedAuthoritiesExtractor())
+//                                )
+//                );
+
+//                  .oauth2ResourceServer(
 //                oauth2ResourceServer -> oauth2ResourceServer
 //                        .jwt(jwt -> jwt.jwtDecoder(jwtDecoder))
-//        );
-////                .oauth2ResourceServer(
-////                        oauth2ResourceServer -> oauth2ResourceServer.jwt.jwtDecoder()
-////        ).jwt().jwtAuthenticationConverter().jwtDecoder();
-////
-////                .oauth2ResourceServer(oauth2ResourceServer ->
-////                        oauth2ResourceServer
-////                                .jwt
-////                                        (jwt -> jwt
-////                                        .jwtAuthenticationConverter(grantedAuthoritiesExtractor())
-////                                )
-////                );
-//
+
 //
 //
 //
@@ -86,4 +123,4 @@ public class SecurityConfig {
 //        return new ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter);
 //    }
 //}
-}
+    }
