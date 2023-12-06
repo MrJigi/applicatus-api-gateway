@@ -30,34 +30,34 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
-        http.authorizeExchange(exchanges -> exchanges
-                                .pathMatchers(HttpMethod.POST, "/post-service/api/post/**").hasRole("USER")
-                                .pathMatchers(HttpMethod.PUT, "/post-service/api/post/**").hasRole("USER")
-                                .pathMatchers(HttpMethod.DELETE, "/post-service/api/post/**").hasRole("USER")
-                                .pathMatchers(HttpMethod.GET, "/post-service/api/post").hasRole("USER")
-                                .pathMatchers(HttpMethod.POST, "/post-service/api/post/**").hasRole("USER")
-//                        .pathMatchers(HttpMethod.POST, "/api/post/**").hasRole("USER").authenticated()
-//                                .pathMatchers(HttpMethod.PUT, "/api/post/**").permitAll()
-                                .pathMatchers(HttpMethod.GET, "/user-service/api/user/**").permitAll()
-                                .pathMatchers(HttpMethod.GET, "/user-service/api/user/{username}/info").hasAnyRole()
-                                .pathMatchers(HttpMethod.GET, "/user-service/api/user/getAll").permitAll()
-                                .pathMatchers(HttpMethod.PUT, "/user-service/api/user/**").permitAll()
-                                .pathMatchers(HttpMethod.DELETE, "/user-service/api/user/**").permitAll()
-
-
-//                        .pathMatchers(HttpMethod.GET, "/api/post/**/api/order/getUserOrder").authenticated()
-//                        .pathMatchers(HttpMethod.POST, "/api/post/**/api/order/placeOrder").authenticated()
-//                        .pathMatchers(HttpMethod.POST, "/api/post/**/api/order/**").hasRole("ADMIN")
-//                        .pathMatchers(HttpMethod.PUT, "/api/post/**/api/order/**").hasRole("ADMIN")
-//                        .pathMatchers(HttpMethod.DELETE, "/api/post/**/api/order/**").hasRole("ADMIN")
-//                        .pathMatchers(HttpMethod.DELETE, "/inventory-service/api/invertory/**").hasRole("ADMIN")
-//                        .pathMatchers(HttpMethod.GET, "/post-service/api/product/getAll").permitAll()
-                                .pathMatchers(HttpMethod.POST, "/user-service/api/auth/register").permitAll()
-                                .pathMatchers(HttpMethod.POST, "/user-service/api/auth/**").permitAll()
-
-                                .pathMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-                                .pathMatchers(HttpMethod.GET, "/actuator/gateway/routes").permitAll()
-                );
+//        http.authorizeExchange(exchanges -> exchanges
+//                                .pathMatchers(HttpMethod.POST, "/post-service/api/post/**").hasRole("USER")
+//                                .pathMatchers(HttpMethod.PUT, "/post-service/api/post/**").hasRole("USER")
+//                                .pathMatchers(HttpMethod.DELETE, "/post-service/api/post/**").hasRole("USER")
+//                                .pathMatchers(HttpMethod.GET, "/post-service/api/post").hasRole("USER")
+//                                .pathMatchers(HttpMethod.POST, "/post-service/api/post/**").permitAll()
+////                        .pathMatchers(HttpMethod.POST, "/api/post/**").hasRole("USER").authenticated()
+////                                .pathMatchers(HttpMethod.PUT, "/api/post/**").permitAll()
+//                                .pathMatchers(HttpMethod.GET, "/user-service/api/user/**").permitAll()
+//                                .pathMatchers(HttpMethod.GET, "/user-service/api/user/{username}/info").hasAnyRole()
+//                                .pathMatchers(HttpMethod.GET, "/user-service/api/user/getAll").permitAll()
+//                                .pathMatchers(HttpMethod.PUT, "/user-service/api/user/**").permitAll()
+//                                .pathMatchers(HttpMethod.DELETE, "/user-service/api/user/**").permitAll()
+//
+//
+////                        .pathMatchers(HttpMethod.GET, "/api/post/**/api/order/getUserOrder").authenticated()
+////                        .pathMatchers(HttpMethod.POST, "/api/post/**/api/order/placeOrder").authenticated()
+////                        .pathMatchers(HttpMethod.POST, "/api/post/**/api/order/**").hasRole("ADMIN")
+////                        .pathMatchers(HttpMethod.PUT, "/api/post/**/api/order/**").hasRole("ADMIN")
+////                        .pathMatchers(HttpMethod.DELETE, "/api/post/**/api/order/**").hasRole("ADMIN")
+////                        .pathMatchers(HttpMethod.DELETE, "/inventory-service/api/invertory/**").hasRole("ADMIN")
+////                        .pathMatchers(HttpMethod.GET, "/post-service/api/product/getAll").permitAll()
+//                                .pathMatchers(HttpMethod.POST, "/user-service/api/auth/register").permitAll()
+//                                .pathMatchers(HttpMethod.POST, "/user-service/api/auth/**").permitAll()
+//
+//                                .pathMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+//                                .pathMatchers(HttpMethod.GET, "/actuator/gateway/routes").permitAll()
+//                );
 //                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 //                http.oauth2ResourceServer( oauth2 -> oauth2
@@ -71,8 +71,8 @@ public class SecurityConfig {
 //                                (jwt -> jwt
 //                                        .jwtAuthenticationConverter(grantedAuthoritiesExtractor())
 //                                )
-
-        http.csrf(ServerHttpSecurity.CsrfSpec::disable);
+        http.formLogin(formLoginSpec -> formLoginSpec.disable());
+        http.csrf(csrfSpec -> csrfSpec.disable());
 
         return http.build();
     }
